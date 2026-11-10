@@ -74,6 +74,8 @@
       </header>
 
       <main>
+        <p id="mensagem-protecao" style="margin-bottom: 20px;"></p>
+
         <section class="boas-vindas">
           <h2>Bem-vindo à plataforma</h2>
           <p>
@@ -127,15 +129,16 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', async function() {
-      const usuario = await protegerPagina();
+    document.addEventListener(
+      'DOMContentLoaded',
+      async function() {
+        const usuario = await protegerPagina();
 
-      if (!usuario) {
-        return;
+        if (usuario) {
+          configurarBotaoSair();
+        }
       }
-
-      configurarBotaoSair();
-    });
+    );
   </script>
 </body>
 </html>
