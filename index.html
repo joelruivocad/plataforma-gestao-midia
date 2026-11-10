@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestão de Mídia</title>
+
+  <title>Entrar | MídiaHub</title>
 
   <style>
     :root {
@@ -15,8 +16,8 @@
       --cor-texto-secundario: #667085;
       --cor-borda: #e4e7ec;
       --cor-sucesso: #12b76a;
-      --cor-alerta: #f79009;
-      --sombra: 0 8px 24px rgba(16, 24, 40, 0.06);
+      --cor-erro: #b42318;
+      --sombra: 0 8px 24px rgba(16, 24, 40, 0.08);
     }
 
     * {
@@ -32,324 +33,11 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    .app {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    .sidebar {
-      width: 250px;
-      background: #111827;
-      color: #ffffff;
-      padding: 24px 16px;
-    }
-
-    .logo {
-      padding: 0 12px 28px;
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .logo span {
-      color: #a5b4fc;
-    }
-
-    .menu-titulo {
-      padding: 0 12px 10px;
-      color: #9ca3af;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .menu {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-      border: 0;
-      border-radius: 8px;
-      background: transparent;
-      color: #d1d5db;
-      cursor: pointer;
-      font-size: 14px;
-      padding: 12px;
-      text-align: left;
-    }
-
-    .menu-item:hover,
-    .menu-item.ativo {
-      background: #312e81;
-      color: #ffffff;
-    }
-
-    .menu-icone {
-      width: 22px;
-      text-align: center;
-      font-size: 16px;
-    }
-
-    .conteudo {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .topo {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 76px;
-      border-bottom: 1px solid var(--cor-borda);
-      background: var(--cor-painel);
-      padding: 16px 32px;
-    }
-
-    .topo h1 {
-      font-size: 22px;
-    }
-
-    .usuario-resumo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .avatar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: #e0e7ff;
-      color: var(--cor-principal-escura);
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .usuario-texto strong {
-      display: block;
-      font-size: 14px;
-    }
-
-    .usuario-texto small {
-      color: var(--cor-texto-secundario);
-      font-size: 12px;
-    }
-
-    main {
-      padding: 32px;
-    }
-
-    .boas-vindas {
-      margin-bottom: 28px;
-    }
-
-    .boas-vindas h2 {
-      margin-bottom: 8px;
-      font-size: 25px;
-    }
-
-    .boas-vindas p {
-      color: var(--cor-texto-secundario);
-      font-size: 14px;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 18px;
-      margin-bottom: 24px;
-    }
-
-    .card {
-      border: 1px solid var(--cor-borda);
-      border-radius: 12px;
-      background: var(--cor-painel);
-      box-shadow: var(--sombra);
-      padding: 20px;
-    }
-
-    .card-titulo {
-      color: var(--cor-texto-secundario);
-      font-size: 13px;
-      margin-bottom: 14px;
-    }
-
-    .card-valor {
-      color: var(--cor-texto);
-      font-size: 27px;
-      font-weight: 700;
-    }
-
-    .card-info {
-      margin-top: 10px;
-      color: var(--cor-texto-secundario);
-      font-size: 12px;
-    }
-
-    .secao-grid {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: 20px;
-    }
-
-    .painel {
-      border: 1px solid var(--cor-borda);
-      border-radius: 12px;
-      background: var(--cor-painel);
-      box-shadow: var(--sombra);
-      padding: 22px;
-    }
-
-    .painel-cabecalho {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .painel-cabecalho h3 {
-      font-size: 16px;
-    }
-
-    .botao-secundario {
-      border: 1px solid var(--cor-borda);
-      border-radius: 7px;
-      background: #ffffff;
-      color: var(--cor-texto);
-      cursor: pointer;
-      font-size: 12px;
-      padding: 8px 12px;
-    }
-
-    .botao-secundario:hover {
-      background: #f9fafb;
-    }
-
-    .grafico-vazio {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 230px;
-      border: 1px dashed #cbd5e1;
-      border-radius: 8px;
-      background: #f8fafc;
-      color: var(--cor-texto-secundario);
-      font-size: 13px;
-      text-align: center;
-    }
-
-    .lista-tarefas {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .tarefa {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid #f0f2f5;
-      padding-bottom: 12px;
-    }
-
-    .tarefa:last-child {
-      border-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .tarefa-status {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--cor-alerta);
-    }
-
-    .tarefa-status.verde {
-      background: var(--cor-sucesso);
-    }
-
-    .tarefa-texto {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .tarefa-texto strong {
-      display: block;
-      overflow: hidden;
-      font-size: 13px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .tarefa-texto small {
-      color: var(--cor-texto-secundario);
-      font-size: 11px;
-    }
-
-    @media (max-width: 1000px) {
-      .cards {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .secao-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 700px) {
-      .app {
-        display: block;
-      }
-
-      .sidebar {
-        width: 100%;
-        padding: 16px;
-      }
-
-      .logo {
-        padding-bottom: 16px;
-      }
-
-      .menu {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .topo {
-        padding: 16px 20px;
-      }
-
-      .topo h1 {
-        font-size: 18px;
-      }
-
-      .usuario-texto {
-        display: none;
-      }
-
-      main {
-        padding: 22px 16px;
-      }
-
-      .cards {
-        grid-template-columns: 1fr;
-      }
-    }
     .tela-login {
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: var(--cor-fundo);
       padding: 20px;
     }
 
@@ -360,13 +48,13 @@
       border-radius: 16px;
       background: var(--cor-painel);
       box-shadow: var(--sombra);
-      padding: 32px;
+      padding: 34px;
     }
 
     .login-logo {
       margin-bottom: 28px;
       color: var(--cor-principal);
-      font-size: 26px;
+      font-size: 28px;
       font-weight: 700;
       text-align: center;
     }
@@ -385,21 +73,22 @@
       margin-bottom: 24px;
       color: var(--cor-texto-secundario);
       font-size: 14px;
+      line-height: 1.5;
       text-align: center;
     }
 
-    .campo-login {
+    .campo {
       margin-bottom: 16px;
     }
 
-    .campo-login label {
+    .campo label {
       display: block;
       margin-bottom: 7px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
-    .campo-login input {
+    .campo input {
       width: 100%;
       border: 1px solid var(--cor-borda);
       border-radius: 8px;
@@ -409,12 +98,12 @@
       font-size: 14px;
     }
 
-    .campo-login input:focus {
+    .campo input:focus {
       border-color: var(--cor-principal);
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
     }
 
-    .botao-login {
+    .botao {
       width: 100%;
       border: 0;
       border-radius: 8px;
@@ -426,16 +115,16 @@
       padding: 13px;
     }
 
-    .botao-login:hover {
+    .botao:hover {
       background: var(--cor-principal-escura);
     }
 
-    .botao-login:disabled {
+    .botao:disabled {
       cursor: not-allowed;
-      opacity: 0.7;
+      opacity: 0.65;
     }
 
-    .link-login {
+    .link {
       display: block;
       margin-top: 18px;
       color: var(--cor-principal);
@@ -445,60 +134,60 @@
       text-decoration: none;
     }
 
-    .link-login:hover {
+    .link:hover {
       text-decoration: underline;
     }
 
     .mensagem {
-      min-height: 20px;
-      margin-top: 16px;
+      min-height: 22px;
+      margin-top: 18px;
       font-size: 13px;
-      line-height: 1.4;
+      line-height: 1.5;
       text-align: center;
     }
 
     .mensagem.erro {
-      color: #b42318;
+      color: var(--cor-erro);
     }
 
     .mensagem.sucesso {
       color: var(--cor-sucesso);
     }
 
-    .botao-sair {
-      border: 0;
-      border-radius: 7px;
-      background: #fee4e2;
-      color: #b42318;
-      cursor: pointer;
-      font-size: 12px;
-      padding: 8px 12px;
+    .oculto {
+      display: none;
     }
 
-    .botao-sair:hover {
-      background: #fecdca;
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 26px 20px;
+      }
+
+      .login-titulo {
+        font-size: 21px;
+      }
     }
-    
   </style>
 </head>
 
 <body>
-    <section id="tela-login" class="tela-login">
-    <div class="login-card">
+  <main class="tela-login">
+    <section class="login-card">
       <div class="login-logo">
         Mídia<span>Hub</span>
       </div>
 
-      <div id="formulario-login">
+      <div id="bloco-login">
         <h1 class="login-titulo">Entrar na plataforma</h1>
 
         <p class="login-subtitulo">
-          Use seu e-mail e sua senha para continuar.
+          Use seu e-mail e sua senha para acessar o sistema.
         </p>
 
-        <form id="formulario-login-real">
-          <div class="campo-login">
+        <form id="formulario-login">
+          <div class="campo">
             <label for="email-login">E-mail</label>
+
             <input
               id="email-login"
               type="email"
@@ -508,8 +197,9 @@
             >
           </div>
 
-          <div class="campo-login">
+          <div class="campo">
             <label for="senha-login">Senha</label>
+
             <input
               id="senha-login"
               type="password"
@@ -519,26 +209,27 @@
             >
           </div>
 
-          <button class="botao-login" type="submit">
+          <button id="botao-login" class="botao" type="submit">
             Entrar
           </button>
         </form>
 
-        <a id="link-esqueci-senha" class="link-login">
+        <a id="link-esqueci-senha" class="link" href="#">
           Esqueci minha senha
         </a>
       </div>
 
-      <div id="formulario-recuperacao" style="display: none;">
+      <div id="bloco-recuperacao" class="oculto">
         <h1 class="login-titulo">Redefinir senha</h1>
 
         <p class="login-subtitulo">
           Informe seu e-mail para receber o link de recuperação.
         </p>
 
-        <form id="formulario-recuperacao-real">
-          <div class="campo-login">
+        <form id="formulario-recuperacao">
+          <div class="campo">
             <label for="email-recuperacao">E-mail</label>
+
             <input
               id="email-recuperacao"
               type="email"
@@ -548,408 +239,289 @@
             >
           </div>
 
-          <button class="botao-login" type="submit">
+          <button id="botao-recuperacao" class="botao" type="submit">
             Enviar link
           </button>
         </form>
 
-        <a id="link-voltar-login" class="link-login">
+        <a id="link-voltar-login" class="link" href="#">
           Voltar para o login
         </a>
       </div>
 
-      <div id="formulario-nova-senha" style="display: none;">
+      <div id="bloco-nova-senha" class="oculto">
         <h1 class="login-titulo">Criar nova senha</h1>
 
         <p class="login-subtitulo">
           Digite e confirme sua nova senha.
         </p>
 
-        <form id="formulario-nova-senha-real">
-          <div class="campo-login">
+        <form id="formulario-nova-senha">
+          <div class="campo">
             <label for="nova-senha">Nova senha</label>
+
             <input
               id="nova-senha"
               type="password"
               placeholder="Mínimo de 6 caracteres"
               autocomplete="new-password"
+              minlength="6"
               required
             >
           </div>
 
-          <div class="campo-login">
+          <div class="campo">
             <label for="confirmacao-senha">Confirmar nova senha</label>
+
             <input
               id="confirmacao-senha"
               type="password"
               placeholder="Digite a senha novamente"
               autocomplete="new-password"
+              minlength="6"
               required
             >
           </div>
 
-          <button class="botao-login" type="submit">
+          <button class="botao" type="submit">
             Salvar nova senha
           </button>
         </form>
       </div>
 
-      <div id="mensagem-login" class="mensagem"></div>
-    </div>
-  </section>
-   <div class="app" style="display: none;">
-    <aside class="sidebar">
-      <div class="logo">
-        Mídia<span>Hub</span>
-      </div>
+      <div id="mensagem" class="mensagem"></div>
+    </section>
+  </main>
 
-      <div class="menu-titulo">Menu principal</div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-      <nav class="menu">
-        <button class="menu-item ativo" onclick="selecionarMenu(this, 'Visão geral')">
-          <span class="menu-icone">⌂</span>
-          Visão geral
-        </button>
+  <script>
+    const SUPABASE_URL =
+      'https://anrwavvwxcaetmyjeqyf.supabase.co';
 
-        <button class="menu-item" onclick="selecionarMenu(this, 'Usuários')">
-          <span class="menu-icone">♙</span>
-          Usuários
-        </button>
+    const SUPABASE_PUBLIC_KEY =
+      'sb_publishable_vi2OXKBT4vhODxFzvmb2eg_4yV83oH_';
 
-        <button class="menu-item" onclick="selecionarMenu(this, 'Dashboard')">
-          <span class="menu-icone">▥</span>
-          Dashboard
-        </button>
-
-        <button class="menu-item" onclick="selecionarMenu(this, 'Tarefas')">
-          <span class="menu-icone">✓</span>
-          Tarefas
-        </button>
-
-        <button class="menu-item" onclick="selecionarMenu(this, 'Treinamentos')">
-          <span class="menu-icone">▣</span>
-          Treinamentos
-        </button>
-
-        <button class="menu-item" onclick="selecionarMenu(this, 'Configurações')">
-          <span class="menu-icone">⚙</span>
-          Configurações
-        </button>
-      </nav>
-    </aside>
-
-    <div class="conteudo">
-      <header class="topo">
-        <h1 id="titulo-pagina">Visão geral</h1>
-
-        <div class="usuario-resumo">
-          <div id="avatar-usuario" class="avatar">US</div>
-
-          <div class="usuario-texto">
-            <strong id="nome-usuario">Usuário</strong>
-            <small id="cargo-usuario">Aguardando login</small>
-          </div>
-
-          <button id="botao-sair" class="botao-sair" type="button">
-            Sair
-          </button>
-        </div>
-        
-      </header>
-
-      <main>
-        <section class="boas-vindas">
-          <h2>Olá, administrador</h2>
-          <p>Este será o centro de gestão do seu time de mídia.</p>
-        </section>
-
-        <section class="cards">
-          <article class="card">
-            <div class="card-titulo">Usuários ativos</div>
-            <div class="card-valor">--</div>
-            <div class="card-info">Aguardando conexão com o banco</div>
-          </article>
-
-          <article class="card">
-            <div class="card-titulo">Tarefas pendentes</div>
-            <div class="card-valor">--</div>
-            <div class="card-info">Aguardando cadastro de tarefas</div>
-          </article>
-
-          <article class="card">
-            <div class="card-titulo">Investimento</div>
-            <div class="card-valor">--</div>
-            <div class="card-info">Aguardando importação de dados</div>
-          </article>
-
-          <article class="card">
-            <div class="card-titulo">Receita</div>
-            <div class="card-valor">--</div>
-            <div class="card-info">Aguardando dados pós-clique</div>
-          </article>
-        </section>
-
-        <section class="secao-grid">
-          <article class="painel">
-            <div class="painel-cabecalho">
-              <h3>Resultados de mídia</h3>
-              <button class="botao-secundario" onclick="mostrarAviso('O filtro será ativado na etapa do dashboard.')">
-                Filtrar período
-              </button>
-            </div>
-
-            <div class="grafico-vazio">
-              O gráfico será preenchido quando conectarmos os dados das campanhas.
-            </div>
-          </article>
-
-          <article class="painel">
-            <div class="painel-cabecalho">
-              <h3>Próximas tarefas</h3>
-              <button class="botao-secundario" onclick="mostrarAviso('O módulo de tarefas será criado na próxima etapa.')">
-                Ver todas
-              </button>
-            </div>
-
-            <div class="lista-tarefas">
-              <div class="tarefa">
-                <span class="tarefa-status"></span>
-                <div class="tarefa-texto">
-                  <strong>Configure o primeiro usuário</strong>
-                  <small>Etapa de preparação</small>
-                </div>
-              </div>
-
-              <div class="tarefa">
-                <span class="tarefa-status verde"></span>
-                <div class="tarefa-texto">
-                  <strong>Crie o banco de dados</strong>
-                  <small>Próxima etapa</small>
-                </div>
-              </div>
-
-              <div class="tarefa">
-                <span class="tarefa-status"></span>
-                <div class="tarefa-texto">
-                  <strong>Importe os dados de campanha</strong>
-                  <small>Etapa do dashboard</small>
-                </div>
-              </div>
-            </div>
-          </article>
-        </section>
-      </main>
-    </div>
-  </div>
-
- <!-- Biblioteca oficial do Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-  /*
-    Substitua os dois valores abaixo pelas informações encontradas
-    em Project Settings > API, no Supabase.
-  */
-
- const SUPABASE_URL = 'https://anrwavvwxcaetmyjeqyf.supabase.co';
-const SUPABASE_PUBLIC_KEY = 'sb_publishable_vi2OXKBT4vhODxFzvmb2eg_4yV83oH_';
-
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLIC_KEY
-  );
-
-  const telaLogin = document.getElementById('tela-login');
-  const aplicativo = document.querySelector('.app');
-  const formularioLogin = document.getElementById('formulario-login');
-  const formularioRecuperacao = document.getElementById('formulario-recuperacao');
-  const formularioNovaSenha = document.getElementById('formulario-nova-senha');
-  const mensagemLogin = document.getElementById('mensagem-login');
-  const nomeUsuario = document.getElementById('nome-usuario');
-  const cargoUsuario = document.getElementById('cargo-usuario');
-  const avatarUsuario = document.getElementById('avatar-usuario');
-
-  function mostrarMensagem(mensagem, tipo = 'erro') {
-    mensagemLogin.textContent = mensagem;
-    mensagemLogin.className = `mensagem ${tipo}`;
-  }
-
-  function mostrarLogin() {
-    telaLogin.style.display = 'flex';
-    aplicativo.style.display = 'none';
-    formularioLogin.style.display = 'block';
-    formularioRecuperacao.style.display = 'none';
-    formularioNovaSenha.style.display = 'none';
-  }
-
-  function mostrarAplicativo(usuario) {
-    telaLogin.style.display = 'none';
-    aplicativo.style.display = 'flex';
-
-    const nome =
-      usuario.user_metadata?.full_name ||
-      usuario.email?.split('@')[0] ||
-      'Usuário';
-
-    const iniciais = nome
-      .split(' ')
-      .slice(0, 2)
-      .map(parte => parte.charAt(0).toUpperCase())
-      .join('');
-
-    nomeUsuario.textContent = nome;
-    cargoUsuario.textContent = usuario.email || 'Usuário da plataforma';
-    avatarUsuario.textContent = iniciais;
-  }
-
-  async function verificarSessao() {
-    const { data, error } = await supabaseClient.auth.getSession();
-
-    if (error || !data.session) {
-      mostrarLogin();
-      return;
-    }
-
-    mostrarAplicativo(data.session.user);
-  }
-
-  formularioLogin.addEventListener('submit', async function(evento) {
-    evento.preventDefault();
-
-    const email = document.getElementById('email-login').value.trim();
-    const senha = document.getElementById('senha-login').value;
-
-    if (!email || !senha) {
-      mostrarMensagem('Preencha o e-mail e a senha.');
-      return;
-    }
-
-    const botao = formularioLogin.querySelector('button[type="submit"]');
-    botao.disabled = true;
-    botao.textContent = 'Entrando...';
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password: senha
-    });
-
-    botao.disabled = false;
-    botao.textContent = 'Entrar';
-
-    if (error) {
-      mostrarMensagem('E-mail ou senha incorretos.');
-      return;
-    }
-
-    mostrarAplicativo(data.user);
-  });
-
-  document
-    .getElementById('link-esqueci-senha')
-    .addEventListener('click', function(evento) {
-      evento.preventDefault();
-
-      formularioLogin.style.display = 'none';
-      formularioRecuperacao.style.display = 'block';
-      formularioNovaSenha.style.display = 'none';
-      mensagemLogin.textContent = '';
-    });
-
-  document
-    .getElementById('link-voltar-login')
-    .addEventListener('click', function(evento) {
-      evento.preventDefault();
-
-      formularioLogin.style.display = 'block';
-      formularioRecuperacao.style.display = 'none';
-      formularioNovaSenha.style.display = 'none';
-      mensagemLogin.textContent = '';
-    });
-
-  formularioRecuperacao.addEventListener('submit', async function(evento) {
-    evento.preventDefault();
-
-    const email = document
-      .getElementById('email-recuperacao')
-      .value
-      .trim();
-
-    if (!email) {
-      mostrarMensagem('Informe o seu e-mail.');
-      return;
-    }
-
-    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.href
-    });
-
-    if (error) {
-      mostrarMensagem('Não foi possível enviar o e-mail de recuperação.');
-      return;
-    }
-
-    mostrarMensagem(
-      'E-mail enviado. Verifique sua caixa de entrada e a pasta de spam.',
-      'sucesso'
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLIC_KEY
     );
-  });
 
-  formularioNovaSenha.addEventListener('submit', async function(evento) {
-    evento.preventDefault();
+    const blocoLogin = document.getElementById('bloco-login');
+    const blocoRecuperacao = document.getElementById('bloco-recuperacao');
+    const blocoNovaSenha = document.getElementById('bloco-nova-senha');
+    const mensagem = document.getElementById('mensagem');
 
-    const novaSenha = document.getElementById('nova-senha').value;
-    const confirmacao = document.getElementById('confirmacao-senha').value;
+    function mostrarMensagem(texto, tipo) {
+      mensagem.textContent = texto;
+      mensagem.className = 'mensagem';
 
-    if (novaSenha.length < 6) {
-      mostrarMensagem('A senha deve ter pelo menos 6 caracteres.');
-      return;
+      if (tipo) {
+        mensagem.classList.add(tipo);
+      }
     }
 
-    if (novaSenha !== confirmacao) {
-      mostrarMensagem('As senhas não são iguais.');
-      return;
+    function mostrarBloco(blocoParaMostrar) {
+      blocoLogin.classList.add('oculto');
+      blocoRecuperacao.classList.add('oculto');
+      blocoNovaSenha.classList.add('oculto');
+
+      blocoParaMostrar.classList.remove('oculto');
+      mostrarMensagem('');
     }
 
-    const { error } = await supabaseClient.auth.updateUser({
-      password: novaSenha
+    async function verificarSessaoAtual() {
+      const resultado = await supabaseClient.auth.getSession();
+
+      if (resultado.error) {
+        mostrarMensagem(
+          'Não foi possível verificar a sessão.',
+          'erro'
+        );
+        return;
+      }
+
+      if (resultado.data.session) {
+        window.location.href = 'dashboard.html';
+      }
+    }
+
+    document
+      .getElementById('formulario-login')
+      .addEventListener('submit', async function(evento) {
+        evento.preventDefault();
+
+        const email = document
+          .getElementById('email-login')
+          .value
+          .trim();
+
+        const senha = document
+          .getElementById('senha-login')
+          .value;
+
+        const botao = document.getElementById('botao-login');
+
+        botao.disabled = true;
+        botao.textContent = 'Entrando...';
+        mostrarMensagem('');
+
+        const resultado =
+          await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: senha
+          });
+
+        botao.disabled = false;
+        botao.textContent = 'Entrar';
+
+        if (resultado.error) {
+          console.error('Erro de autenticação:', resultado.error);
+
+          mostrarMensagem(
+            'Não foi possível entrar. Verifique seu e-mail e sua senha.',
+            'erro'
+          );
+
+          return;
+        }
+
+        window.location.href = 'dashboard.html';
+      });
+
+    document
+      .getElementById('link-esqueci-senha')
+      .addEventListener('click', function(evento) {
+        evento.preventDefault();
+        mostrarBloco(blocoRecuperacao);
+      });
+
+    document
+      .getElementById('link-voltar-login')
+      .addEventListener('click', function(evento) {
+        evento.preventDefault();
+        mostrarBloco(blocoLogin);
+      });
+
+    document
+      .getElementById('formulario-recuperacao')
+      .addEventListener('submit', async function(evento) {
+        evento.preventDefault();
+
+        const email = document
+          .getElementById('email-recuperacao')
+          .value
+          .trim();
+
+        const botao = document.getElementById('botao-recuperacao');
+
+        botao.disabled = true;
+        botao.textContent = 'Enviando...';
+        mostrarMensagem('');
+
+        const resultado =
+          await supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin +
+              window.location.pathname
+          });
+
+        botao.disabled = false;
+        botao.textContent = 'Enviar link';
+
+        if (resultado.error) {
+          console.error(
+            'Erro de recuperação:',
+            resultado.error
+          );
+
+          mostrarMensagem(
+            'Não foi possível enviar o link de recuperação.',
+            'erro'
+          );
+
+          return;
+        }
+
+        mostrarMensagem(
+          'Link enviado. Verifique seu e-mail e a pasta de spam.',
+          'sucesso'
+        );
+      });
+
+    document
+      .getElementById('formulario-nova-senha')
+      .addEventListener('submit', async function(evento) {
+        evento.preventDefault();
+
+        const novaSenha = document
+          .getElementById('nova-senha')
+          .value;
+
+        const confirmacaoSenha = document
+          .getElementById('confirmacao-senha')
+          .value;
+
+        if (novaSenha.length < 6) {
+          mostrarMensagem(
+            'A senha deve ter pelo menos 6 caracteres.',
+            'erro'
+          );
+
+          return;
+        }
+
+        if (novaSenha !== confirmacaoSenha) {
+          mostrarMensagem(
+            'As senhas não são iguais.',
+            'erro'
+          );
+
+          return;
+        }
+
+        const resultado =
+          await supabaseClient.auth.updateUser({
+            password: novaSenha
+          });
+
+        if (resultado.error) {
+          console.error(
+            'Erro ao atualizar senha:',
+            resultado.error
+          );
+
+          mostrarMensagem(
+            'Não foi possível alterar a senha.',
+            'erro'
+          );
+
+          return;
+        }
+
+        mostrarMensagem(
+          'Senha alterada com sucesso. Entrando...',
+          'sucesso'
+        );
+
+        setTimeout(function() {
+          window.location.href = 'dashboard.html';
+        }, 1200);
+      });
+
+    supabaseClient.auth.onAuthStateChange(function(
+      evento,
+      sessao
+    ) {
+      if (evento === 'PASSWORD_RECOVERY') {
+        mostrarBloco(blocoNovaSenha);
+      }
+
+      if (evento === 'SIGNED_IN' && sessao) {
+        window.location.href = 'dashboard.html';
+      }
     });
 
-    if (error) {
-      mostrarMensagem('Não foi possível alterar a senha.');
-      return;
-    }
-
-    mostrarMensagem('Senha alterada com sucesso.', 'sucesso');
-
-    setTimeout(() => {
-      window.location.hash = '';
-      verificarSessao();
-    }, 1500);
-  });
-
-  document
-    .getElementById('botao-sair')
-    .addEventListener('click', async function() {
-      await supabaseClient.auth.signOut();
-      mostrarLogin();
-    });
-
-  supabaseClient.auth.onAuthStateChange((evento, sessao) => {
-    if (evento === 'PASSWORD_RECOVERY') {
-      telaLogin.style.display = 'flex';
-      aplicativo.style.display = 'none';
-      formularioLogin.style.display = 'none';
-      formularioRecuperacao.style.display = 'none';
-      formularioNovaSenha.style.display = 'block';
-    }
-
-    if (evento === 'SIGNED_OUT') {
-      mostrarLogin();
-    }
-  });
-
-  verificarSessao();
-</script>
-
+    verificarSessaoAtual();
+  </script>
 </body>
 </html>
