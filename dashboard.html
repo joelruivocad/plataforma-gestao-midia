@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Dashboard | MídiaHub</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        Mídia<span>Hub</span>
+      </div>
+
+      <div class="menu-titulo">Menu principal</div>
+
+      <nav class="menu">
+        <a class="menu-item ativo" href="dashboard.html">
+          <span class="menu-icone">⌂</span>
+          Visão geral
+        </a>
+
+        <a class="menu-item" href="usuarios.html">
+          <span class="menu-icone">♙</span>
+          Usuários
+        </a>
+
+        <a class="menu-item" href="resultados.html">
+          <span class="menu-icone">▥</span>
+          Resultados
+        </a>
+
+        <a class="menu-item" href="tarefas.html">
+          <span class="menu-icone">✓</span>
+          Tarefas
+        </a>
+
+        <a class="menu-item" href="treinamentos.html">
+          <span class="menu-icone">▣</span>
+          Treinamentos
+        </a>
+
+        <a class="menu-item" href="configuracoes.html">
+          <span class="menu-icone">⚙</span>
+          Configurações
+        </a>
+      </nav>
+    </aside>
+
+    <div class="conteudo">
+      <header class="topo">
+        <h1>Visão geral</h1>
+
+        <div class="usuario-resumo">
+          <div id="avatar-usuario" class="avatar">US</div>
+
+          <div class="usuario-texto">
+            <strong id="nome-usuario">Carregando...</strong>
+            <small id="email-usuario">Carregando...</small>
+          </div>
+
+          <button id="botao-sair" class="botao-sair" type="button">
+            Sair
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="boas-vindas">
+          <h2>Bem-vindo à plataforma</h2>
+          <p>
+            Aqui ficará o resumo das operações do seu time de mídia.
+          </p>
+        </section>
+
+        <section class="cards">
+          <article class="painel">
+            <div class="card-titulo">Usuários ativos</div>
+            <div class="card-valor">--</div>
+            <div class="card-info">
+              Dados serão carregados pelo banco
+            </div>
+          </article>
+
+          <article class="painel">
+            <div class="card-titulo">Tarefas pendentes</div>
+            <div class="card-valor">--</div>
+            <div class="card-info">
+              Módulo de tarefas em construção
+            </div>
+          </article>
+
+          <article class="painel">
+            <div class="card-titulo">Investimento</div>
+            <div class="card-valor">--</div>
+            <div class="card-info">
+              Dados de mídia serão conectados depois
+            </div>
+          </article>
+
+          <article class="painel">
+            <div class="card-titulo">Receita</div>
+            <div class="card-valor">--</div>
+            <div class="card-info">
+              Dados pós-clique serão adicionados depois
+            </div>
+          </article>
+        </section>
+
+        <section class="painel">
+          <h2>Resultados de mídia</h2>
+
+          <div class="grafico-vazio">
+            O gráfico será exibido quando conectarmos os dados das campanhas.
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      const usuario = await protegerPagina();
+
+      if (!usuario) {
+        return;
+      }
+
+      configurarBotaoSair();
+    });
+  </script>
+</body>
+</html>
