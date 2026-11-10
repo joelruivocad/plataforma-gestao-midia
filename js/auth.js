@@ -1,16 +1,39 @@
 async function protegerPagina() {
-  const resultado = await supabaseClient.auth.getSession();
+  const elementoMensagem = document.getElementById('mensagem-protecao');
 
-  if (resultado.error || !resultado.data.session) {
-    window.location.href = 'index.html';
+  try {
+    const resultado = await supabaseClient.auth.getSession();
+
+    if (resultado.error) {
+      if (elementoMensagem) {
+        elementoMensagem.textContent =
+          'Erro ao verificar a sessão: ' +
+          (resultado.error.message || 'erro desconhecido');
+      }
+
+      return null;
+    }
+
+    if (!resultado.data || !resultado.data.session) {
+      window.location.replace('index.html');
+      return null;
+    }
+
+    const usuario = resultado.data.session.user;
+
+    preencherDadosDoUsuario(usuario);
+
+    return usuario;
+  } catch (erro) {
+    if (elementoMensagem) {
+      elementoMensagem.textContent =
+        'Erro de conexão com o sistema.';
+    }
+
+    console.error('Erro ao proteger página:', erro);
+
     return null;
   }
-
-  const usuario = resultado.data.session.user;
-
-  preencherDadosDoUsuario(usuario);
-
-  return usuario;
 }
 
 function preencherDadosDoUsuario(usuario) {
@@ -47,7 +70,7 @@ function preencherDadosDoUsuario(usuario) {
 
 async function sairDaPlataforma() {
   await supabaseClient.auth.signOut();
-  window.location.href = 'index.html';
+  window.location.replace('index.html');
 }
 
 function configurarBotaoSair() {
