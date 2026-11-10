@@ -488,22 +488,214 @@
     </div>
   </div>
 
-  <script>
-    function selecionarMenu(botao, nomePagina) {
-      const botoes = document.querySelectorAll('.menu-item');
+ <!-- Biblioteca oficial do Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-      botoes.forEach(function(item) {
-        item.classList.remove('ativo');
-      });
+<script>
+  /*
+    Substitua os dois valores abaixo pelas informações encontradas
+    em Project Settings > API, no Supabase.
+  */
 
-      botao.classList.add('ativo');
+  const SUPABASE_URL = 'https://anrwavvwxcaetmyjeqyf.supabase.co/rest/v1/';
+  const SUPABASE_PUBLIC_KEY = 'sb_publishable_vi2OXKBT4vhODxFzvmb2eg_4yV83oH_';
 
-      document.getElementById('titulo-pagina').textContent = nomePagina;
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLIC_KEY
+  );
+
+  const telaLogin = document.getElementById('tela-login');
+  const aplicativo = document.querySelector('.app');
+  const formularioLogin = document.getElementById('formulario-login');
+  const formularioRecuperacao = document.getElementById('formulario-recuperacao');
+  const formularioNovaSenha = document.getElementById('formulario-nova-senha');
+  const mensagemLogin = document.getElementById('mensagem-login');
+  const nomeUsuario = document.getElementById('nome-usuario');
+  const cargoUsuario = document.getElementById('cargo-usuario');
+  const avatarUsuario = document.getElementById('avatar-usuario');
+
+  function mostrarMensagem(mensagem, tipo = 'erro') {
+    mensagemLogin.textContent = mensagem;
+    mensagemLogin.className = `mensagem ${tipo}`;
+  }
+
+  function mostrarLogin() {
+    telaLogin.style.display = 'flex';
+    aplicativo.style.display = 'none';
+    formularioLogin.style.display = 'block';
+    formularioRecuperacao.style.display = 'none';
+    formularioNovaSenha.style.display = 'none';
+  }
+
+  function mostrarAplicativo(usuario) {
+    telaLogin.style.display = 'none';
+    aplicativo.style.display = 'flex';
+
+    const nome =
+      usuario.user_metadata?.full_name ||
+      usuario.email?.split('@')[0] ||
+      'Usuário';
+
+    const iniciais = nome
+      .split(' ')
+      .slice(0, 2)
+      .map(parte => parte.charAt(0).toUpperCase())
+      .join('');
+
+    nomeUsuario.textContent = nome;
+    cargoUsuario.textContent = usuario.email || 'Usuário da plataforma';
+    avatarUsuario.textContent = iniciais;
+  }
+
+  async function verificarSessao() {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error || !data.session) {
+      mostrarLogin();
+      return;
     }
 
-    function mostrarAviso(mensagem) {
-      alert(mensagem);
+    mostrarAplicativo(data.session.user);
+  }
+
+  formularioLogin.addEventListener('submit', async function(evento) {
+    evento.preventDefault();
+
+    const email = document.getElementById('email-login').value.trim();
+    const senha = document.getElementById('senha-login').value;
+
+    if (!email || !senha) {
+      mostrarMensagem('Preencha o e-mail e a senha.');
+      return;
     }
-  </script>
+
+    const botao = formularioLogin.querySelector('button[type="submit"]');
+    botao.disabled = true;
+    botao.textContent = 'Entrando...';
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password: senha
+    });
+
+    botao.disabled = false;
+    botao.textContent = 'Entrar';
+
+    if (error) {
+      mostrarMensagem('E-mail ou senha incorretos.');
+      return;
+    }
+
+    mostrarAplicativo(data.user);
+  });
+
+  document
+    .getElementById('link-esqueci-senha')
+    .addEventListener('click', function(evento) {
+      evento.preventDefault();
+
+      formularioLogin.style.display = 'none';
+      formularioRecuperacao.style.display = 'block';
+      formularioNovaSenha.style.display = 'none';
+      mensagemLogin.textContent = '';
+    });
+
+  document
+    .getElementById('link-voltar-login')
+    .addEventListener('click', function(evento) {
+      evento.preventDefault();
+
+      formularioLogin.style.display = 'block';
+      formularioRecuperacao.style.display = 'none';
+      formularioNovaSenha.style.display = 'none';
+      mensagemLogin.textContent = '';
+    });
+
+  formularioRecuperacao.addEventListener('submit', async function(evento) {
+    evento.preventDefault();
+
+    const email = document
+      .getElementById('email-recuperacao')
+      .value
+      .trim();
+
+    if (!email) {
+      mostrarMensagem('Informe o seu e-mail.');
+      return;
+    }
+
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.href
+    });
+
+    if (error) {
+      mostrarMensagem('Não foi possível enviar o e-mail de recuperação.');
+      return;
+    }
+
+    mostrarMensagem(
+      'E-mail enviado. Verifique sua caixa de entrada e a pasta de spam.',
+      'sucesso'
+    );
+  });
+
+  formularioNovaSenha.addEventListener('submit', async function(evento) {
+    evento.preventDefault();
+
+    const novaSenha = document.getElementById('nova-senha').value;
+    const confirmacao = document.getElementById('confirmacao-senha').value;
+
+    if (novaSenha.length < 6) {
+      mostrarMensagem('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+
+    if (novaSenha !== confirmacao) {
+      mostrarMensagem('As senhas não são iguais.');
+      return;
+    }
+
+    const { error } = await supabaseClient.auth.updateUser({
+      password: novaSenha
+    });
+
+    if (error) {
+      mostrarMensagem('Não foi possível alterar a senha.');
+      return;
+    }
+
+    mostrarMensagem('Senha alterada com sucesso.', 'sucesso');
+
+    setTimeout(() => {
+      window.location.hash = '';
+      verificarSessao();
+    }, 1500);
+  });
+
+  document
+    .getElementById('botao-sair')
+    .addEventListener('click', async function() {
+      await supabaseClient.auth.signOut();
+      mostrarLogin();
+    });
+
+  supabaseClient.auth.onAuthStateChange((evento, sessao) => {
+    if (evento === 'PASSWORD_RECOVERY') {
+      telaLogin.style.display = 'flex';
+      aplicativo.style.display = 'none';
+      formularioLogin.style.display = 'none';
+      formularioRecuperacao.style.display = 'none';
+      formularioNovaSenha.style.display = 'block';
+    }
+
+    if (evento === 'SIGNED_OUT') {
+      mostrarLogin();
+    }
+  });
+
+  verificarSessao();
+</script>
+
 </body>
 </html>
