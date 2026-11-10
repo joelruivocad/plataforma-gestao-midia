@@ -31,29 +31,34 @@
       font-size: 14px;
     }
 
-    .botao-principal {
-      border: 0;
+    .botao-principal,
+    .botao-secundario {
       border-radius: 8px;
-      background: var(--cor-principal);
-      color: #ffffff;
       cursor: pointer;
       font-size: 14px;
+      padding: 10px 14px;
+    }
+
+    .botao-principal {
+      border: 0;
+      background: var(--cor-principal);
+      color: #ffffff;
       font-weight: 700;
-      padding: 11px 16px;
     }
 
     .botao-principal:hover {
       background: var(--cor-principal-escura);
     }
 
+    .botao-principal:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
     .botao-secundario {
       border: 1px solid var(--cor-borda);
-      border-radius: 8px;
       background: #ffffff;
       color: var(--cor-texto);
-      cursor: pointer;
-      font-size: 14px;
-      padding: 10px 14px;
     }
 
     .painel-cabecalho {
@@ -74,8 +79,8 @@
 
     .tabela {
       width: 100%;
-      border-collapse: collapse;
       min-width: 650px;
+      border-collapse: collapse;
     }
 
     .tabela th,
@@ -83,22 +88,16 @@
       border-bottom: 1px solid var(--cor-borda);
       padding: 14px 12px;
       text-align: left;
-      vertical-align: middle;
     }
 
     .tabela th {
       color: var(--cor-texto-secundario);
       font-size: 12px;
-      font-weight: 700;
       text-transform: uppercase;
     }
 
     .tabela td {
       font-size: 14px;
-    }
-
-    .tabela td small {
-      color: var(--cor-texto-secundario);
     }
 
     .status {
@@ -119,15 +118,24 @@
       color: #475467;
     }
 
-    .funcao {
-      color: var(--cor-texto-secundario);
-      font-size: 13px;
-    }
-
     .estado-tabela {
       color: var(--cor-texto-secundario);
-      padding: 28px 12px;
-      text-align: center;
+      padding: 28px 12px !important;
+      text-align: center !important;
+    }
+
+    .mensagem-pagina {
+      min-height: 22px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .mensagem-pagina.erro {
+      color: var(--cor-erro);
+    }
+
+    .mensagem-pagina.sucesso {
+      color: var(--cor-sucesso);
     }
 
     .modal-fundo {
@@ -150,7 +158,6 @@
       max-width: 480px;
       border-radius: 14px;
       background: #ffffff;
-      box-shadow: var(--sombra);
       padding: 26px;
     }
 
@@ -170,7 +177,7 @@
       background: transparent;
       color: var(--cor-texto-secundario);
       cursor: pointer;
-      font-size: 22px;
+      font-size: 24px;
     }
 
     .campo-formulario {
@@ -191,7 +198,6 @@
       border-radius: 8px;
       background: #ffffff;
       padding: 11px;
-      color: var(--cor-texto);
     }
 
     .modal-acoes {
@@ -201,33 +207,14 @@
       margin-top: 22px;
     }
 
-    .mensagem-pagina {
-      min-height: 22px;
-      margin-bottom: 16px;
-      font-size: 14px;
-    }
-
-    .mensagem-pagina.erro {
-      color: var(--cor-erro);
-    }
-
-    .mensagem-pagina.sucesso {
-      color: var(--cor-sucesso);
-    }
-
     @media (max-width: 700px) {
       .pagina-cabecalho {
-        align-items: flex-start;
+        align-items: stretch;
         flex-direction: column;
       }
 
       .pagina-cabecalho .botao-principal {
         width: 100%;
-      }
-
-      .topo {
-        align-items: flex-start;
-        gap: 12px;
       }
     }
   </style>
@@ -350,15 +337,10 @@
           id="botao-fechar-modal"
           class="botao-fechar"
           type="button"
-          aria-label="Fechar"
         >
           ×
         </button>
       </div>
-
-      <p style="margin-bottom: 20px; color: var(--cor-texto-secundario);">
-        O convite será ativado na próxima etapa.
-      </p>
 
       <form id="formulario-novo-usuario">
         <div class="campo-formulario">
@@ -414,7 +396,11 @@
             Cancelar
           </button>
 
-          <button class="botao-principal" type="submit">
+          <button
+            id="botao-enviar-convite"
+            class="botao-principal"
+            type="submit"
+          >
             Enviar convite
           </button>
         </div>
@@ -426,9 +412,14 @@
     let usuarioAtual = null;
     let timeAtual = null;
 
-    const listaUsuarios = document.getElementById('lista-usuarios');
-    const mensagemPagina = document.getElementById('mensagem-pagina');
-    const modal = document.getElementById('modal-novo-usuario');
+    const listaUsuarios =
+      document.getElementById('lista-usuarios');
+
+    const mensagemPagina =
+      document.getElementById('mensagem-pagina');
+
+    const modal =
+      document.getElementById('modal-novo-usuario');
 
     function mostrarMensagem(texto, tipo) {
       mensagemPagina.textContent = texto;
@@ -447,13 +438,7 @@
         viewer: 'Visualizador'
       };
 
-      return funcoes[role] || role || 'Não definido';
-    }
-
-    function criarCelula(texto) {
-      const celula = document.createElement('td');
-      celula.textContent = texto;
-      return celula;
+      return funcoes[role] || 'Não definido';
     }
 
     function renderizarUsuarios(membros) {
@@ -461,31 +446,31 @@
 
       if (!membros || membros.length === 0) {
         listaUsuarios.innerHTML =
-          '<tr><td colspan="4" class="estado-tabela">' +
+          '<tr>' +
+          '<td colspan="4" class="estado-tabela">' +
           'Nenhum usuário encontrado.' +
-          '</td></tr>';
+          '</td>' +
+          '</tr>';
 
         return;
       }
 
       membros.forEach(function(membro) {
-        const linha = document.createElement('tr');
         const perfil = membro.profiles || {};
+        const linha = document.createElement('tr');
 
-        linha.appendChild(
-          criarCelula(perfil.full_name || 'Nome não informado')
-        );
+        const nome = document.createElement('td');
+        nome.textContent =
+          perfil.full_name || 'Nome não informado';
 
-        linha.appendChild(
-          criarCelula(perfil.email || 'E-mail não informado')
-        );
+        const email = document.createElement('td');
+        email.textContent =
+          perfil.email || 'E-mail não informado';
 
-        const celulaFuncao = document.createElement('td');
-        celulaFuncao.className = 'funcao';
-        celulaFuncao.textContent = nomeDaFuncao(membro.role);
-        linha.appendChild(celulaFuncao);
+        const funcao = document.createElement('td');
+        funcao.textContent = nomeDaFuncao(membro.role);
 
-        const celulaStatus = document.createElement('td');
+        const status = document.createElement('td');
         const etiqueta = document.createElement('span');
 
         etiqueta.className = membro.is_active
@@ -496,60 +481,15 @@
           ? 'Ativo'
           : 'Inativo';
 
-        celulaStatus.appendChild(etiqueta);
-        linha.appendChild(celulaStatus);
+        status.appendChild(etiqueta);
+
+        linha.appendChild(nome);
+        linha.appendChild(email);
+        linha.appendChild(funcao);
+        linha.appendChild(status);
 
         listaUsuarios.appendChild(linha);
       });
-    }
-
-    async function carregarUsuarios() {
-      mostrarMensagem('');
-      listaUsuarios.innerHTML =
-        '<tr><td colspan="4" class="estado-tabela">' +
-        'Carregando usuários...' +
-        '</td></tr>';
-
-      if (!timeAtual) {
-        mostrarMensagem(
-          'Não foi possível identificar o time atual.',
-          'erro'
-        );
-
-        return;
-      }
-
-      const resultado = await supabaseClient
-        .from('team_members')
-        .select(`
-          id,
-          role,
-          is_active,
-          profiles (
-            full_name,
-            email
-          )
-        `)
-        .eq('team_id', timeAtual.id)
-        .order('created_at', { ascending: true });
-
-      if (resultado.error) {
-        console.error('Erro ao carregar usuários:', resultado.error);
-
-        listaUsuarios.innerHTML =
-          '<tr><td colspan="4" class="estado-tabela">' +
-          'Não foi possível carregar os usuários.' +
-          '</td></tr>';
-
-        mostrarMensagem(
-          'Verifique se as políticas de segurança foram configuradas.',
-          'erro'
-        );
-
-        return;
-      }
-
-      renderizarUsuarios(resultado.data);
     }
 
     async function identificarTimeAtual() {
@@ -562,7 +502,11 @@
         .maybeSingle();
 
       if (resultado.error) {
-        console.error('Erro ao identificar time:', resultado.error);
+        console.error(
+          'Erro ao identificar time:',
+          resultado.error
+        );
+
         return false;
       }
 
@@ -572,6 +516,53 @@
 
       timeAtual = resultado.data.teams;
       return true;
+    }
+
+    async function carregarUsuarios() {
+      listaUsuarios.innerHTML =
+        '<tr>' +
+        '<td colspan="4" class="estado-tabela">' +
+        'Carregando usuários...' +
+        '</td>' +
+        '</tr>';
+
+      const resultado = await supabaseClient
+        .from('team_members')
+        .select(`
+          id,
+          role,
+          is_active,
+          created_at,
+          profiles (
+            full_name,
+            email
+          )
+        `)
+        .eq('team_id', timeAtual.id)
+        .order('created_at', { ascending: true });
+
+      if (resultado.error) {
+        console.error(
+          'Erro ao carregar usuários:',
+          resultado.error
+        );
+
+        listaUsuarios.innerHTML =
+          '<tr>' +
+          '<td colspan="4" class="estado-tabela">' +
+          'Não foi possível carregar os usuários.' +
+          '</td>' +
+          '</tr>';
+
+        mostrarMensagem(
+          'Não foi possível carregar a lista de usuários.',
+          'erro'
+        );
+
+        return;
+      }
+
+      renderizarUsuarios(resultado.data);
     }
 
     function abrirModal() {
@@ -600,39 +591,107 @@
 
     document
       .getElementById('formulario-novo-usuario')
-      .addEventListener('submit', function(evento) {
+      .addEventListener('submit', async function(evento) {
         evento.preventDefault();
 
+        const nome =
+          document.getElementById('novo-nome').value.trim();
+
+        const email =
+          document.getElementById('novo-email').value.trim();
+
+        const cargo =
+          document.getElementById('novo-cargo').value.trim();
+
+        const role =
+          document.getElementById('novo-perfil').value;
+
+        const botao =
+          document.getElementById('botao-enviar-convite');
+
+        botao.disabled = true;
+        botao.textContent = 'Enviando...';
+        mostrarMensagem('');
+
+        const resultado =
+          await supabaseClient.functions.invoke(
+            'convidar-usuario',
+            {
+              body: {
+                full_name: nome,
+                email: email,
+                cargo: cargo,
+                role: role
+              }
+            }
+          );
+
+        botao.disabled = false;
+        botao.textContent = 'Enviar convite';
+
+        if (resultado.error) {
+          console.error(
+            'Erro ao chamar convite:',
+            resultado.error
+          );
+
+          mostrarMensagem(
+            'Não foi possível enviar o convite. Verifique a publicação da função.',
+            'erro'
+          );
+
+          return;
+        }
+
+        if (resultado.data && resultado.data.error) {
+          mostrarMensagem(
+            resultado.data.error,
+            'erro'
+          );
+
+          return;
+        }
+
         mostrarMensagem(
-          'O envio de convites será ativado na próxima etapa.',
+          'Convite enviado com sucesso.',
           'sucesso'
         );
 
+        document
+          .getElementById('formulario-novo-usuario')
+          .reset();
+
         fecharModal();
+
+        await carregarUsuarios();
       });
 
-    document.addEventListener('DOMContentLoaded', async function() {
-      usuarioAtual = await protegerPagina();
+    document.addEventListener(
+      'DOMContentLoaded',
+      async function() {
+        usuarioAtual = await protegerPagina();
 
-      if (!usuarioAtual) {
-        return;
+        if (!usuarioAtual) {
+          return;
+        }
+
+        configurarBotaoSair();
+
+        const encontrouTime =
+          await identificarTimeAtual();
+
+        if (!encontrouTime) {
+          mostrarMensagem(
+            'Seu usuário não está associado a um time ativo.',
+            'erro'
+          );
+
+          return;
+        }
+
+        await carregarUsuarios();
       }
-
-      configurarBotaoSair();
-
-      const encontrouTime = await identificarTimeAtual();
-
-      if (!encontrouTime) {
-        mostrarMensagem(
-          'Seu usuário ainda não está associado a um time.',
-          'erro'
-        );
-
-        return;
-      }
-
-      await carregarUsuarios();
-    });
+    );
   </script>
 </body>
 </html>
