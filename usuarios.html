@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Usuários | MídiaHub</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+
+  <style>
+    .pagina-cabecalho {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .pagina-cabecalho h2 {
+      margin-bottom: 6px;
+      font-size: 24px;
+    }
+
+    .pagina-cabecalho p {
+      color: var(--cor-texto-secundario);
+      font-size: 14px;
+    }
+
+    .botao-principal {
+      border: 0;
+      border-radius: 8px;
+      background: var(--cor-principal);
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 11px 16px;
+    }
+
+    .botao-principal:hover {
+      background: var(--cor-principal-escura);
+    }
+
+    .botao-secundario {
+      border: 1px solid var(--cor-borda);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--cor-texto);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 10px 14px;
+    }
+
+    .painel-cabecalho {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .painel-cabecalho h3 {
+      font-size: 17px;
+    }
+
+    .tabela-container {
+      overflow-x: auto;
+    }
+
+    .tabela {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px;
+    }
+
+    .tabela th,
+    .tabela td {
+      border-bottom: 1px solid var(--cor-borda);
+      padding: 14px 12px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .tabela th {
+      color: var(--cor-texto-secundario);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .tabela td {
+      font-size: 14px;
+    }
+
+    .tabela td small {
+      color: var(--cor-texto-secundario);
+    }
+
+    .status {
+      display: inline-flex;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 10px;
+    }
+
+    .status.ativo {
+      background: #dcfae6;
+      color: #067647;
+    }
+
+    .status.inativo {
+      background: #f2f4f7;
+      color: #475467;
+    }
+
+    .funcao {
+      color: var(--cor-texto-secundario);
+      font-size: 13px;
+    }
+
+    .estado-tabela {
+      color: var(--cor-texto-secundario);
+      padding: 28px 12px;
+      text-align: center;
+    }
+
+    .modal-fundo {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      background: rgba(16, 24, 40, 0.5);
+      padding: 20px;
+    }
+
+    .modal-fundo.aberto {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: var(--sombra);
+      padding: 26px;
+    }
+
+    .modal-cabecalho {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .modal-cabecalho h3 {
+      font-size: 20px;
+    }
+
+    .botao-fechar {
+      border: 0;
+      background: transparent;
+      color: var(--cor-texto-secundario);
+      cursor: pointer;
+      font-size: 22px;
+    }
+
+    .campo-formulario {
+      margin-bottom: 16px;
+    }
+
+    .campo-formulario label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .campo-formulario input,
+    .campo-formulario select {
+      width: 100%;
+      border: 1px solid var(--cor-borda);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 11px;
+      color: var(--cor-texto);
+    }
+
+    .modal-acoes {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .mensagem-pagina {
+      min-height: 22px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .mensagem-pagina.erro {
+      color: var(--cor-erro);
+    }
+
+    .mensagem-pagina.sucesso {
+      color: var(--cor-sucesso);
+    }
+
+    @media (max-width: 700px) {
+      .pagina-cabecalho {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .pagina-cabecalho .botao-principal {
+        width: 100%;
+      }
+
+      .topo {
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        Mídia<span>Hub</span>
+      </div>
+
+      <div class="menu-titulo">Menu principal</div>
+
+      <nav class="menu">
+        <a class="menu-item" href="dashboard.html">
+          <span class="menu-icone">⌂</span>
+          Visão geral
+        </a>
+
+        <a class="menu-item ativo" href="usuarios.html">
+          <span class="menu-icone">♙</span>
+          Usuários
+        </a>
+
+        <a class="menu-item" href="resultados.html">
+          <span class="menu-icone">▥</span>
+          Resultados
+        </a>
+
+        <a class="menu-item" href="tarefas.html">
+          <span class="menu-icone">✓</span>
+          Tarefas
+        </a>
+
+        <a class="menu-item" href="treinamentos.html">
+          <span class="menu-icone">▣</span>
+          Treinamentos
+        </a>
+
+        <a class="menu-item" href="configuracoes.html">
+          <span class="menu-icone">⚙</span>
+          Configurações
+        </a>
+      </nav>
+    </aside>
+
+    <div class="conteudo">
+      <header class="topo">
+        <h1>Usuários</h1>
+
+        <div class="usuario-resumo">
+          <div id="avatar-usuario" class="avatar">US</div>
+
+          <div class="usuario-texto">
+            <strong id="nome-usuario">Carregando...</strong>
+            <small id="email-usuario">Carregando...</small>
+          </div>
+
+          <button id="botao-sair" class="botao-sair" type="button">
+            Sair
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="pagina-cabecalho">
+          <div>
+            <h2>Gestão de usuários</h2>
+            <p>Administre os integrantes do seu time.</p>
+          </div>
+
+          <button id="botao-novo-usuario" class="botao-principal" type="button">
+            Novo usuário
+          </button>
+        </section>
+
+        <div id="mensagem-pagina" class="mensagem-pagina"></div>
+
+        <section class="painel">
+          <div class="painel-cabecalho">
+            <h3>Membros do time</h3>
+
+            <button id="botao-atualizar" class="botao-secundario" type="button">
+              Atualizar
+            </button>
+          </div>
+
+          <div class="tabela-container">
+            <table class="tabela">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>E-mail</th>
+                  <th>Função</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+
+              <tbody id="lista-usuarios">
+                <tr>
+                  <td colspan="4" class="estado-tabela">
+                    Carregando usuários...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="modal-novo-usuario" class="modal-fundo">
+    <div class="modal">
+      <div class="modal-cabecalho">
+        <h3>Novo usuário</h3>
+
+        <button
+          id="botao-fechar-modal"
+          class="botao-fechar"
+          type="button"
+          aria-label="Fechar"
+        >
+          ×
+        </button>
+      </div>
+
+      <p style="margin-bottom: 20px; color: var(--cor-texto-secundario);">
+        O convite será ativado na próxima etapa.
+      </p>
+
+      <form id="formulario-novo-usuario">
+        <div class="campo-formulario">
+          <label for="novo-nome">Nome completo</label>
+
+          <input
+            id="novo-nome"
+            type="text"
+            placeholder="Nome do usuário"
+            required
+          >
+        </div>
+
+        <div class="campo-formulario">
+          <label for="novo-email">E-mail</label>
+
+          <input
+            id="novo-email"
+            type="email"
+            placeholder="usuario@empresa.com"
+            required
+          >
+        </div>
+
+        <div class="campo-formulario">
+          <label for="novo-cargo">Cargo</label>
+
+          <input
+            id="novo-cargo"
+            type="text"
+            placeholder="Analista de mídia"
+            required
+          >
+        </div>
+
+        <div class="campo-formulario">
+          <label for="novo-perfil">Nível de acesso</label>
+
+          <select id="novo-perfil" required>
+            <option value="manager">Gestor</option>
+            <option value="analyst" selected>Analista</option>
+            <option value="viewer">Visualizador</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+
+        <div class="modal-acoes">
+          <button
+            id="botao-cancelar-modal"
+            class="botao-secundario"
+            type="button"
+          >
+            Cancelar
+          </button>
+
+          <button class="botao-principal" type="submit">
+            Enviar convite
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let usuarioAtual = null;
+    let timeAtual = null;
+
+    const listaUsuarios = document.getElementById('lista-usuarios');
+    const mensagemPagina = document.getElementById('mensagem-pagina');
+    const modal = document.getElementById('modal-novo-usuario');
+
+    function mostrarMensagem(texto, tipo) {
+      mensagemPagina.textContent = texto;
+      mensagemPagina.className = 'mensagem-pagina';
+
+      if (tipo) {
+        mensagemPagina.classList.add(tipo);
+      }
+    }
+
+    function nomeDaFuncao(role) {
+      const funcoes = {
+        admin: 'Administrador',
+        manager: 'Gestor',
+        analyst: 'Analista',
+        viewer: 'Visualizador'
+      };
+
+      return funcoes[role] || role || 'Não definido';
+    }
+
+    function criarCelula(texto) {
+      const celula = document.createElement('td');
+      celula.textContent = texto;
+      return celula;
+    }
+
+    function renderizarUsuarios(membros) {
+      listaUsuarios.innerHTML = '';
+
+      if (!membros || membros.length === 0) {
+        listaUsuarios.innerHTML =
+          '<tr><td colspan="4" class="estado-tabela">' +
+          'Nenhum usuário encontrado.' +
+          '</td></tr>';
+
+        return;
+      }
+
+      membros.forEach(function(membro) {
+        const linha = document.createElement('tr');
+        const perfil = membro.profiles || {};
+
+        linha.appendChild(
+          criarCelula(perfil.full_name || 'Nome não informado')
+        );
+
+        linha.appendChild(
+          criarCelula(perfil.email || 'E-mail não informado')
+        );
+
+        const celulaFuncao = document.createElement('td');
+        celulaFuncao.className = 'funcao';
+        celulaFuncao.textContent = nomeDaFuncao(membro.role);
+        linha.appendChild(celulaFuncao);
+
+        const celulaStatus = document.createElement('td');
+        const etiqueta = document.createElement('span');
+
+        etiqueta.className = membro.is_active
+          ? 'status ativo'
+          : 'status inativo';
+
+        etiqueta.textContent = membro.is_active
+          ? 'Ativo'
+          : 'Inativo';
+
+        celulaStatus.appendChild(etiqueta);
+        linha.appendChild(celulaStatus);
+
+        listaUsuarios.appendChild(linha);
+      });
+    }
+
+    async function carregarUsuarios() {
+      mostrarMensagem('');
+      listaUsuarios.innerHTML =
+        '<tr><td colspan="4" class="estado-tabela">' +
+        'Carregando usuários...' +
+        '</td></tr>';
+
+      if (!timeAtual) {
+        mostrarMensagem(
+          'Não foi possível identificar o time atual.',
+          'erro'
+        );
+
+        return;
+      }
+
+      const resultado = await supabaseClient
+        .from('team_members')
+        .select(`
+          id,
+          role,
+          is_active,
+          profiles (
+            full_name,
+            email
+          )
+        `)
+        .eq('team_id', timeAtual.id)
+        .order('created_at', { ascending: true });
+
+      if (resultado.error) {
+        console.error('Erro ao carregar usuários:', resultado.error);
+
+        listaUsuarios.innerHTML =
+          '<tr><td colspan="4" class="estado-tabela">' +
+          'Não foi possível carregar os usuários.' +
+          '</td></tr>';
+
+        mostrarMensagem(
+          'Verifique se as políticas de segurança foram configuradas.',
+          'erro'
+        );
+
+        return;
+      }
+
+      renderizarUsuarios(resultado.data);
+    }
+
+    async function identificarTimeAtual() {
+      const resultado = await supabaseClient
+        .from('team_members')
+        .select('team_id, teams(id, name, slug)')
+        .eq('user_id', usuarioAtual.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle();
+
+      if (resultado.error) {
+        console.error('Erro ao identificar time:', resultado.error);
+        return false;
+      }
+
+      if (!resultado.data || !resultado.data.teams) {
+        return false;
+      }
+
+      timeAtual = resultado.data.teams;
+      return true;
+    }
+
+    function abrirModal() {
+      modal.classList.add('aberto');
+    }
+
+    function fecharModal() {
+      modal.classList.remove('aberto');
+    }
+
+    document
+      .getElementById('botao-novo-usuario')
+      .addEventListener('click', abrirModal);
+
+    document
+      .getElementById('botao-fechar-modal')
+      .addEventListener('click', fecharModal);
+
+    document
+      .getElementById('botao-cancelar-modal')
+      .addEventListener('click', fecharModal);
+
+    document
+      .getElementById('botao-atualizar')
+      .addEventListener('click', carregarUsuarios);
+
+    document
+      .getElementById('formulario-novo-usuario')
+      .addEventListener('submit', function(evento) {
+        evento.preventDefault();
+
+        mostrarMensagem(
+          'O envio de convites será ativado na próxima etapa.',
+          'sucesso'
+        );
+
+        fecharModal();
+      });
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      usuarioAtual = await protegerPagina();
+
+      if (!usuarioAtual) {
+        return;
+      }
+
+      configurarBotaoSair();
+
+      const encontrouTime = await identificarTimeAtual();
+
+      if (!encontrouTime) {
+        mostrarMensagem(
+          'Seu usuário ainda não está associado a um time.',
+          'erro'
+        );
+
+        return;
+      }
+
+      await carregarUsuarios();
+    });
+  </script>
+</body>
+</html>
