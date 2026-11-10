@@ -344,11 +344,260 @@
         grid-template-columns: 1fr;
       }
     }
+    .tela-login {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--cor-fundo);
+      padding: 20px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid var(--cor-borda);
+      border-radius: 16px;
+      background: var(--cor-painel);
+      box-shadow: var(--sombra);
+      padding: 32px;
+    }
+
+    .login-logo {
+      margin-bottom: 28px;
+      color: var(--cor-principal);
+      font-size: 26px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .login-logo span {
+      color: var(--cor-principal-escura);
+    }
+
+    .login-titulo {
+      margin-bottom: 8px;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .login-subtitulo {
+      margin-bottom: 24px;
+      color: var(--cor-texto-secundario);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .campo-login {
+      margin-bottom: 16px;
+    }
+
+    .campo-login label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .campo-login input {
+      width: 100%;
+      border: 1px solid var(--cor-borda);
+      border-radius: 8px;
+      outline: none;
+      padding: 12px;
+      color: var(--cor-texto);
+      font-size: 14px;
+    }
+
+    .campo-login input:focus {
+      border-color: var(--cor-principal);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    .botao-login {
+      width: 100%;
+      border: 0;
+      border-radius: 8px;
+      background: var(--cor-principal);
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 13px;
+    }
+
+    .botao-login:hover {
+      background: var(--cor-principal-escura);
+    }
+
+    .botao-login:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .link-login {
+      display: block;
+      margin-top: 18px;
+      color: var(--cor-principal);
+      cursor: pointer;
+      font-size: 13px;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .link-login:hover {
+      text-decoration: underline;
+    }
+
+    .mensagem {
+      min-height: 20px;
+      margin-top: 16px;
+      font-size: 13px;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .mensagem.erro {
+      color: #b42318;
+    }
+
+    .mensagem.sucesso {
+      color: var(--cor-sucesso);
+    }
+
+    .botao-sair {
+      border: 0;
+      border-radius: 7px;
+      background: #fee4e2;
+      color: #b42318;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 8px 12px;
+    }
+
+    .botao-sair:hover {
+      background: #fecdca;
+    }
+    
   </style>
 </head>
 
 <body>
-  <div class="app">
+    <section id="tela-login" class="tela-login">
+    <div class="login-card">
+      <div class="login-logo">
+        Mídia<span>Hub</span>
+      </div>
+
+      <div id="formulario-login">
+        <h1 class="login-titulo">Entrar na plataforma</h1>
+
+        <p class="login-subtitulo">
+          Use seu e-mail e sua senha para continuar.
+        </p>
+
+        <form id="formulario-login-real">
+          <div class="campo-login">
+            <label for="email-login">E-mail</label>
+            <input
+              id="email-login"
+              type="email"
+              placeholder="seuemail@empresa.com"
+              autocomplete="email"
+              required
+            >
+          </div>
+
+          <div class="campo-login">
+            <label for="senha-login">Senha</label>
+            <input
+              id="senha-login"
+              type="password"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+              required
+            >
+          </div>
+
+          <button class="botao-login" type="submit">
+            Entrar
+          </button>
+        </form>
+
+        <a id="link-esqueci-senha" class="link-login">
+          Esqueci minha senha
+        </a>
+      </div>
+
+      <div id="formulario-recuperacao" style="display: none;">
+        <h1 class="login-titulo">Redefinir senha</h1>
+
+        <p class="login-subtitulo">
+          Informe seu e-mail para receber o link de recuperação.
+        </p>
+
+        <form id="formulario-recuperacao-real">
+          <div class="campo-login">
+            <label for="email-recuperacao">E-mail</label>
+            <input
+              id="email-recuperacao"
+              type="email"
+              placeholder="seuemail@empresa.com"
+              autocomplete="email"
+              required
+            >
+          </div>
+
+          <button class="botao-login" type="submit">
+            Enviar link
+          </button>
+        </form>
+
+        <a id="link-voltar-login" class="link-login">
+          Voltar para o login
+        </a>
+      </div>
+
+      <div id="formulario-nova-senha" style="display: none;">
+        <h1 class="login-titulo">Criar nova senha</h1>
+
+        <p class="login-subtitulo">
+          Digite e confirme sua nova senha.
+        </p>
+
+        <form id="formulario-nova-senha-real">
+          <div class="campo-login">
+            <label for="nova-senha">Nova senha</label>
+            <input
+              id="nova-senha"
+              type="password"
+              placeholder="Mínimo de 6 caracteres"
+              autocomplete="new-password"
+              required
+            >
+          </div>
+
+          <div class="campo-login">
+            <label for="confirmacao-senha">Confirmar nova senha</label>
+            <input
+              id="confirmacao-senha"
+              type="password"
+              placeholder="Digite a senha novamente"
+              autocomplete="new-password"
+              required
+            >
+          </div>
+
+          <button class="botao-login" type="submit">
+            Salvar nova senha
+          </button>
+        </form>
+      </div>
+
+      <div id="mensagem-login" class="mensagem"></div>
+    </div>
+  </section>
+   <div class="app" style="display: none;">
     <aside class="sidebar">
       <div class="logo">
         Mídia<span>Hub</span>
@@ -394,13 +643,18 @@
         <h1 id="titulo-pagina">Visão geral</h1>
 
         <div class="usuario-resumo">
-          <div class="avatar">AD</div>
+          <div id="avatar-usuario" class="avatar">US</div>
 
           <div class="usuario-texto">
-            <strong>Administrador</strong>
-            <small>Time de mídia</small>
+            <strong id="nome-usuario">Usuário</strong>
+            <small id="cargo-usuario">Aguardando login</small>
           </div>
+
+          <button id="botao-sair" class="botao-sair" type="button">
+            Sair
+          </button>
         </div>
+        
       </header>
 
       <main>
