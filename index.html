@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Entrar | MídiaHub</title>
 
   <style>
@@ -157,16 +156,6 @@
     .oculto {
       display: none;
     }
-
-    @media (max-width: 480px) {
-      .login-card {
-        padding: 26px 20px;
-      }
-
-      .login-titulo {
-        font-size: 21px;
-      }
-    }
   </style>
 </head>
 
@@ -187,7 +176,6 @@
         <form id="formulario-login">
           <div class="campo">
             <label for="email-login">E-mail</label>
-
             <input
               id="email-login"
               type="email"
@@ -199,7 +187,6 @@
 
           <div class="campo">
             <label for="senha-login">Senha</label>
-
             <input
               id="senha-login"
               type="password"
@@ -229,12 +216,10 @@
         <form id="formulario-recuperacao">
           <div class="campo">
             <label for="email-recuperacao">E-mail</label>
-
             <input
               id="email-recuperacao"
               type="email"
               placeholder="seuemail@empresa.com"
-              autocomplete="email"
               required
             >
           </div>
@@ -250,16 +235,15 @@
       </div>
 
       <div id="bloco-nova-senha" class="oculto">
-        <h1 class="login-titulo">Criar nova senha</h1>
+        <h1 class="login-titulo">Crie sua senha</h1>
 
         <p class="login-subtitulo">
-          Digite e confirme sua nova senha.
+          Para concluir seu cadastro, crie uma senha pessoal.
         </p>
 
         <form id="formulario-nova-senha">
           <div class="campo">
             <label for="nova-senha">Nova senha</label>
-
             <input
               id="nova-senha"
               type="password"
@@ -271,7 +255,9 @@
           </div>
 
           <div class="campo">
-            <label for="confirmacao-senha">Confirmar nova senha</label>
+            <label for="confirmacao-senha">
+              Confirmar nova senha
+            </label>
 
             <input
               id="confirmacao-senha"
@@ -284,7 +270,7 @@
           </div>
 
           <button class="botao" type="submit">
-            Salvar nova senha
+            Criar senha e continuar
           </button>
         </form>
       </div>
@@ -307,10 +293,17 @@
       SUPABASE_PUBLIC_KEY
     );
 
-    const blocoLogin = document.getElementById('bloco-login');
-    const blocoRecuperacao = document.getElementById('bloco-recuperacao');
-    const blocoNovaSenha = document.getElementById('bloco-nova-senha');
-    const mensagem = document.getElementById('mensagem');
+    const blocoLogin =
+      document.getElementById('bloco-login');
+
+    const blocoRecuperacao =
+      document.getElementById('bloco-recuperacao');
+
+    const blocoNovaSenha =
+      document.getElementById('bloco-nova-senha');
+
+    const mensagem =
+      document.getElementById('mensagem');
 
     function mostrarMensagem(texto, tipo) {
       mensagem.textContent = texto;
@@ -321,17 +314,28 @@
       }
     }
 
-    function mostrarBloco(blocoParaMostrar) {
+    function mostrarBloco(bloco) {
       blocoLogin.classList.add('oculto');
       blocoRecuperacao.classList.add('oculto');
       blocoNovaSenha.classList.add('oculto');
 
-      blocoParaMostrar.classList.remove('oculto');
+      bloco.classList.remove('oculto');
       mostrarMensagem('');
     }
 
-    async function verificarSessaoAtual() {
-      const resultado = await supabaseClient.auth.getSession();
+    function veioDeConvite() {
+      const hash = window.location.hash;
+      const busca = window.location.search;
+
+      return (
+        hash.includes('type=invite') ||
+        busca.includes('convite=1')
+      );
+    }
+
+    async function prepararTela() {
+      const resultado =
+        await supabaseClient.auth.getSession();
 
       if (resultado.error) {
         mostrarMensagem(
@@ -341,8 +345,15 @@
         return;
       }
 
+      if (veioDeConvite()) {
+        mostrarBloco(blocoNovaSenha);
+        return;
+      }
+
       if (resultado.data.session) {
-        window.location.href = 'dashboard.html';
+        window.location.replace(
+          'https://joelruivocad.github.io/plataforma-gestao-midia/dashboard.html'
+        );
       }
     }
 
@@ -351,20 +362,17 @@
       .addEventListener('submit', async function(evento) {
         evento.preventDefault();
 
-        const email = document
-          .getElementById('email-login')
-          .value
-          .trim();
+        const email =
+          document.getElementById('email-login').value.trim();
 
-        const senha = document
-          .getElementById('senha-login')
-          .value;
+        const senha =
+          document.getElementById('senha-login').value;
 
-        const botao = document.getElementById('botao-login');
+        const botao =
+          document.getElementById('botao-login');
 
         botao.disabled = true;
         botao.textContent = 'Entrando...';
-        mostrarMensagem('');
 
         const resultado =
           await supabaseClient.auth.signInWithPassword({
@@ -376,17 +384,16 @@
         botao.textContent = 'Entrar';
 
         if (resultado.error) {
-          console.error('Erro de autenticação:', resultado.error);
-
           mostrarMensagem(
-            'Não foi possível entrar. Verifique seu e-mail e sua senha.',
+            'Não foi possível entrar. Verifique o e-mail e a senha.',
             'erro'
           );
-
           return;
         }
 
-        window.location.href = 'dashboard.html';
+        window.location.replace(
+          'https://joelruivocad.github.io/plataforma-gestao-midia/dashboard.html'
+        );
       });
 
     document
@@ -408,42 +415,25 @@
       .addEventListener('submit', async function(evento) {
         evento.preventDefault();
 
-        const email = document
-          .getElementById('email-recuperacao')
-          .value
-          .trim();
-
-        const botao = document.getElementById('botao-recuperacao');
-
-        botao.disabled = true;
-        botao.textContent = 'Enviando...';
-        mostrarMensagem('');
+        const email =
+          document.getElementById('email-recuperacao').value.trim();
 
         const resultado =
           await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.origin +
-              window.location.pathname
+            redirectTo:
+              'https://joelruivocad.github.io/plataforma-gestao-midia/'
           });
 
-        botao.disabled = false;
-        botao.textContent = 'Enviar link';
-
         if (resultado.error) {
-          console.error(
-            'Erro de recuperação:',
-            resultado.error
-          );
-
           mostrarMensagem(
             'Não foi possível enviar o link de recuperação.',
             'erro'
           );
-
           return;
         }
 
         mostrarMensagem(
-          'Link enviado. Verifique seu e-mail e a pasta de spam.',
+          'Link enviado. Verifique seu e-mail.',
           'sucesso'
         );
       });
@@ -453,29 +443,25 @@
       .addEventListener('submit', async function(evento) {
         evento.preventDefault();
 
-        const novaSenha = document
-          .getElementById('nova-senha')
-          .value;
+        const novaSenha =
+          document.getElementById('nova-senha').value;
 
-        const confirmacaoSenha = document
-          .getElementById('confirmacao-senha')
-          .value;
+        const confirmacao =
+          document.getElementById('confirmacao-senha').value;
 
         if (novaSenha.length < 6) {
           mostrarMensagem(
             'A senha deve ter pelo menos 6 caracteres.',
             'erro'
           );
-
           return;
         }
 
-        if (novaSenha !== confirmacaoSenha) {
+        if (novaSenha !== confirmacao) {
           mostrarMensagem(
             'As senhas não são iguais.',
             'erro'
           );
-
           return;
         }
 
@@ -485,26 +471,22 @@
           });
 
         if (resultado.error) {
-          console.error(
-            'Erro ao atualizar senha:',
-            resultado.error
-          );
-
           mostrarMensagem(
-            'Não foi possível alterar a senha.',
+            'Não foi possível criar a senha.',
             'erro'
           );
-
           return;
         }
 
         mostrarMensagem(
-          'Senha alterada com sucesso. Entrando...',
+          'Senha criada com sucesso. Abrindo a plataforma...',
           'sucesso'
         );
 
         setTimeout(function() {
-          window.location.href = 'dashboard.html';
+          window.location.replace(
+            'https://joelruivocad.github.io/plataforma-gestao-midia/dashboard.html'
+          );
         }, 1200);
       });
 
@@ -512,16 +494,23 @@
       evento,
       sessao
     ) {
-      if (evento === 'PASSWORD_RECOVERY') {
-        mostrarBloco(blocoNovaSenha);
-      }
+      if (
+        (evento === 'SIGNED_IN' ||
+          evento === 'INITIAL_SESSION') &&
+        sessao
+      ) {
+        if (veioDeConvite()) {
+          mostrarBloco(blocoNovaSenha);
+          return;
+        }
 
-      if (evento === 'SIGNED_IN' && sessao) {
-        window.location.href = 'dashboard.html';
+        window.location.replace(
+          'https://joelruivocad.github.io/plataforma-gestao-midia/dashboard.html'
+        );
       }
     });
 
-    verificarSessaoAtual();
+    prepararTela();
   </script>
 </body>
 </html>
